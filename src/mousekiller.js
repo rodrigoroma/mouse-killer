@@ -6,7 +6,7 @@
 	mousekiller.provider('mouseKillerConfig', function () {
 		this.event = 'click';
 		this.hintType = 'title';
-		this.titleText = 'Hotkey: %';
+		this.titleText = 'Shortcut: %';
 
 		this.setEvent = function(event) {
 			this.event = event.toLowerCase();
