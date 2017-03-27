@@ -19,7 +19,7 @@ Or even:
 * If you prefer to define the shortcuts directly in you HTML tags, you should consider using Mouse Killer.
 * If you prefer to define the shortcuts in your controller, you should consider using another plugin.
 
-If Mouse Killer may not suit your needs, take a look at [angular-hotkeys](https://github.com/chieffancypants/angular-hotkeys).
+Not sure if Mouse Killer is the option that best suit your needs? So take a look at [angular-hotkeys](https://github.com/chieffancypants/angular-hotkeys) which has a different approach.
 
 ## Installation
 
@@ -27,21 +27,22 @@ If Mouse Killer may not suit your needs, take a look at [angular-hotkeys](https:
 
 2. Include `mousekiller.js` in your HTML: 
     
-    <script src="/path/to/mousekiller.js"></script>
+        <script src="/path/to/mousekiller.js"></script>
 
 3. Add **mouseKiller** as a dependency to your app:
 
-    angular.module('myApp', [
-        'mouseKiller'
-    ])
+        angular.module('myApp', [
+            'mouseKiller'
+        ])
 
 ## Usage
+Complete example: 
 
-  <button 
-    mk-shortcut="ctrl + enter"
-    mk-hint-type="title"
-    mk-title-text="The shortcut for this button is %"
-    mk-event="click">Button</button>
+    <button 
+        mk-shortcut="ctrl + enter"
+        mk-hint-type="title"
+        mk-title-text="The shortcut for this button is %"
+        mk-event="click">Button</button>
 
 | Attribute     | Required | Default     | Description |
 |---------------|----------|-------------|-------------|
@@ -55,14 +56,14 @@ You can use the `.config()` of your application to set the directive default par
 
 In the code below you can see all the three parameters that can be set.
 
-  app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
-      mouseKillerConfigProvider.setHintType('title');
-      mouseKillerConfigProvider.setTitleText('Be faster using the %   shortcut');
-      mouseKillerConfigProvider.setEvent('focus');
-  }]);
+    app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
+        mouseKillerConfigProvider.setHintType('title');
+        mouseKillerConfigProvider.setTitleText('Be faster using the % shortcut');
+        mouseKillerConfigProvider.setEvent('focus');
+    }]);
 
 ### Non-overridable shortcuts
-Mouse Killer prevents the browser default action for a given shortcut. For example, if you define `ctrl+o` as a shortcut in your application, Mouse Killer will prevent the browser default action from openning a file.
+Mouse Killer prevents the browser default action for a given shortcut. For example, if you define `ctrl+o` as a shortcut in your application, Mouse Killer will prevent the browser from openning a file.
 
 For security reasons, there are some shortcuts that can't be prevented and it varies by browser. For example, Google Chrome won't let you override the `ctrl+n` shortcut. 
 
@@ -87,7 +88,7 @@ The following strings are considered modifiers keys:
 | `ctrl`               |
 | `alt`                |
 | `shift`              |
-| `meta` (windows key) |
+| `meta` (Windows key) |
 
 #### Keys
 | Letters |   | Numbers | Numpad | Fx | Misc. |
