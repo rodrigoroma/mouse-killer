@@ -1,3 +1,12 @@
+/*
+ * mouse-killer
+ *
+ * An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).
+ *
+ * (c) 2017 Rodrigo Roma
+ * License: MIT
+ */
+
 (function() {
 	"use strict";
 
@@ -47,7 +56,7 @@
 				var init = function() {
 					// Add hint to the element
 					addHint();
-					
+
 					// Bind the keydown event to the handler function
 					$document.on('keydown', handleKeydown);
 					
@@ -236,6 +245,8 @@
 					if (elem.disabled) {
 						return true;
 					}
+
+					// TODO: check if the element has the "disabled" attribute
 
 					return false;
 				}

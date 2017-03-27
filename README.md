@@ -23,11 +23,11 @@ Not sure if Mouse Killer is the option that best suit your needs? So take a look
 
 ## Installation
 
-1. Download `mousekiller.js` file and place it somewhere in your project.
+1. Download `mouse-killer.js` file and place it somewhere in your project.
 
-2. Include `mousekiller.js` in your HTML: 
+2. Include `mouse-killer.js` in your HTML: 
     
-        <script src="/path/to/mousekiller.js"></script>
+        <script src="/path/to/mouse-killer.js"></script>
 
 3. Add **mouseKiller** as a dependency to your app:
 
