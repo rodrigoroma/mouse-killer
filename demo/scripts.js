@@ -3,9 +3,9 @@ var app = angular.module('app', [
     "toastr"
 ]);
 
-app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
-    mouseKillerConfigProvider.setTitleText('Be faster using the % shortcut');
-    mouseKillerConfigProvider.setHintStyle('title');
+app.config(['mouseKillerProvider', function(mouseKillerProvider) {
+    mouseKillerProvider.setTitleText('Be faster using the % shortcut');
+    mouseKillerProvider.setHintStyle('title');
 }]);
 
 app.controller('MainController', function($scope, toastr) {

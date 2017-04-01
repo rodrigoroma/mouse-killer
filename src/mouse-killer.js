@@ -12,7 +12,7 @@
 
 	var mousekiller = angular.module('mouseKiller', []);
 
-	mousekiller.provider('mouseKillerConfig', function () {
+	mousekiller.provider('mouseKiller', function () {
 		this.event = 'click';
 		this.hintStyle = 'title';
 		this.titleText = 'Shortcut: %';
@@ -34,7 +34,7 @@
 		};
 	})
 
-	mousekiller.directive('mkShortcut', ['$document', 'mouseKillerConfig', function($document, mouseKillerConfig) {
+	mousekiller.directive('mkShortcut', ['$document', 'mouseKiller', function($document, mouseKiller) {
 		return {
 			restrict: 'A',
 			scope: {
@@ -48,9 +48,9 @@
 
 				var config = {
 					shortcut: scope.mkShortcut,
-					event: scope.mkEvent || mouseKillerConfig.event,
-					hintStyle: scope.mkHintStyle || mouseKillerConfig.hintStyle,
-					titleText: scope.mkTitleText || mouseKillerConfig.titleText
+					event: scope.mkEvent || mouseKiller.event,
+					hintStyle: scope.mkHintStyle || mouseKiller.hintStyle,
+					titleText: scope.mkTitleText || mouseKiller.titleText
 				}
 
 				var init = function() {
