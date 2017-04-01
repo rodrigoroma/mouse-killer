@@ -1,0 +1,24 @@
+{
+  "name": "mouse-killer",
+  "homepage": "https://github.com/rodrigoroma/mouse-killer",
+  "authors": [
+    "Rodrigo Roma <rromarj@gmail.com>"
+  ],
+  "description": "An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).",
+  "main": "src/mouse-killer.js",
+  "moduleType": [],
+  "keywords": [
+    "angularjs",
+    "keyboard-shortcuts",
+    "shortcut",
+    "angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
