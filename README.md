@@ -23,7 +23,9 @@ Not sure if Mouse Killer is the option that best suit your needs? So take a look
 
 ## Installation
 
-1. Download `mouse-killer.js` file and place it somewhere in your project.
+1. Use Bower to add Mouse Killer to your project (you can also download `mouse-killer.js` file if you want).
+
+        bower install mouse-killer --save 
 
 2. Include `mouse-killer.js` in your HTML: 
     
