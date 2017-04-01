@@ -5,12 +5,13 @@ var app = angular.module('app', [
 
 app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
     mouseKillerConfigProvider.setTitleText('Be faster using the % shortcut');
-    mouseKillerConfigProvider.setHintType('title');
+    mouseKillerConfigProvider.setHintStyle('title');
 }]);
 
 app.controller('MainController', function($scope, toastr) {
 
     $scope.buttonAction = function(txt) {
+        console.log(txt);
         toastr.success(txt);
     }
 

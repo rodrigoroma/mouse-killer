@@ -14,15 +14,15 @@
 
 	mousekiller.provider('mouseKillerConfig', function () {
 		this.event = 'click';
-		this.hintType = 'title';
+		this.hintStyle = 'title';
 		this.titleText = 'Shortcut: %';
 
 		this.setEvent = function(event) {
 			this.event = event.toLowerCase();
 		};
 
-		this.setHintType = function(hintType) {
-			this.hintType = hintType.toLowerCase();
+		this.setHintStyle = function(hintStyle) {
+			this.hintStyle = hintStyle.toLowerCase();
 		};
 
 		this.setTitleText = function(titleText) {
@@ -40,7 +40,7 @@
 			scope: {
 				mkShortcut: '@',
 				mkEvent: '@',
-				mkHintType: '@',
+				mkHintStyle: '@',
 				mkTitleText: '@'
 			},
 			link: function(scope, element, attrs, controller) {
@@ -49,7 +49,7 @@
 				var config = {
 					shortcut: scope.mkShortcut,
 					event: scope.mkEvent || mouseKillerConfig.event,
-					hintType: scope.mkHintType || mouseKillerConfig.hintType,
+					hintStyle: scope.mkHintStyle || mouseKillerConfig.hintStyle,
 					titleText: scope.mkTitleText || mouseKillerConfig.titleText
 				}
 
@@ -257,13 +257,13 @@
 						.trim()
 						.replace(/ *\+ */g, "+");
 
-					if (config.hintType == 'title') {
+					if (config.hintStyle == 'title') {
 						var titleText = config.titleText.replace("%", shortcutText)
 
 						element.attr('title', titleText);
 					}
 
-					if (config.hintType == 'inline') {
+					if (config.hintStyle == 'inline') {
 						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
 					}
 				}
