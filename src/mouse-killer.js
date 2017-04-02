@@ -1,5 +1,5 @@
 /*
- * mouse-killer
+ * mouse-killer 0.1.0
  *
  * An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).
  *
