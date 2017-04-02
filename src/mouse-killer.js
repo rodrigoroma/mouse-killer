@@ -14,19 +14,19 @@
 
 	mousekiller.provider('mouseKiller', function () {
 		this.event = 'click';
-		this.hintStyle = 'title';
-		this.titleText = 'Shortcut: %';
+		this.hint = 'title';
+		this.hintTitle = 'Shortcut: %';
 
 		this.setEvent = function(event) {
 			this.event = event.toLowerCase();
 		};
 
-		this.setHintStyle = function(hintStyle) {
-			this.hintStyle = hintStyle.toLowerCase();
+		this.setHint = function(hint) {
+			this.hint = hint.toLowerCase();
 		};
 
-		this.setTitleText = function(titleText) {
-			this.titleText = titleText;
+		this.setHintTitle = function(hintTitle) {
+			this.hintTitle = hintTitle;
 		}
 
 		this.$get = function () {
@@ -40,8 +40,8 @@
 			scope: {
 				mkShortcut: '@',
 				mkEvent: '@',
-				mkHintStyle: '@',
-				mkTitleText: '@'
+				mkHint: '@',
+				mkHintTitle: '@'
 			},
 			link: function(scope, element, attrs, controller) {
 				var modifiers = ['shift', 'ctrl', 'alt', 'meta'];
@@ -49,8 +49,8 @@
 				var config = {
 					shortcut: scope.mkShortcut,
 					event: scope.mkEvent || mouseKiller.event,
-					hintStyle: scope.mkHintStyle || mouseKiller.hintStyle,
-					titleText: scope.mkTitleText || mouseKiller.titleText
+					hint: scope.mkHint || mouseKiller.hint,
+					hintTitle: scope.mkHintTitle || mouseKiller.hintTitle
 				}
 
 				var init = function() {
@@ -257,13 +257,13 @@
 						.trim()
 						.replace(/ *\+ */g, "+");
 
-					if (config.hintStyle == 'title') {
-						var titleText = config.titleText.replace("%", shortcutText)
+					if (config.hint == 'title') {
+						var hintTitle = config.hintTitle.replace("%", shortcutText)
 
-						element.attr('title', titleText);
+						element.attr('title', hintTitle);
 					}
 
-					if (config.hintStyle == 'inline') {
+					if (config.hint == 'inline') {
 						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
 					}
 				}

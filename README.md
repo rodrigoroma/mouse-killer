@@ -42,15 +42,15 @@ Complete example:
 
     <button 
         mk-shortcut="ctrl + enter"
-        mk-hint-style="title"
-        mk-title-text="The shortcut for this button is %"
+        mk-hint="title"
+        mk-hint-title="The shortcut for this button is %"
         mk-event="click">Button</button>
 
 | Attribute     | Required | Default     | Description |
 |---------------|----------|-------------|-------------|
 | mk-shortcut   | Yes      | -           | The key combination (see below). |
-| mk-hint-style | No       | title       | `none` doesn't display a hint for the shortcut. <br />`title` display the shortcut in the *title* attribute of the element. <br />`inline` appends the shortcut to the inner text of the element. Example: **Button text** becomes **Button text (F8)** |
-| mk-title-text | No       | Shortcut: % | If mk-hint-style is set to title, this attribute defines how the title will be. The character `%` will be replaced by the shortcut. |
+| mk-hint       | No       | title       | `none` doesn't display a hint for the shortcut. <br />`title` display the shortcut in the *title* attribute of the element. <br />`inline` appends the shortcut to the inner text of the element. Example: **Button text** becomes **Button text (F8)** |
+| mk-hint-title | No       | Shortcut: % | If `mk-hint` is set to `title`, this attribute defines how the title will be. The character `%` will be replaced by the shortcut. |
 | mk-event      | No       | click       | The event to be triggered on the element when the shortcut is pressed. |
 
 ### Directive default configuration
@@ -59,8 +59,8 @@ You can use the `.config()` of your application to set the directive default par
 In the code below you can see all the three parameters that can be set.
 
     app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
-        mouseKillerConfigProvider.setHintStyle('title');
-        mouseKillerConfigProvider.setTitleText('Be faster using the % shortcut');
+        mouseKillerConfigProvider.setHint('title');
+        mouseKillerConfigProvider.setHintTitle('Be faster using the % shortcut');
         mouseKillerConfigProvider.setEvent('focus');
     }]);
 
