@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Mouse Killer demo</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/angular-toastr/dist/angular-toastr.css" />
+	
+	<style>
+	.overlay {
+		position: absolute; 
+		top: 0; 
+		left: 0; 
+		opacity: 0.5; 
+		background-color: black; 
+		width: 100%; 
+		height: 300px;
+	}
+	</style>
+</head>
+<body class="container" ng-controller="MainController">
+
+  <h1>Mouse Killer demo</h1>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Test settings</h3>
+
+      <div class="checkbox"> <label> <input type="checkbox" ng-model="invisible"> Hide buttons (ng-show)</label> </div>
+      <div class="checkbox"> <label> <input type="checkbox" ng-model="disabled"> Disable buttons (ng-disabled)</label> </div>
+      <div class="checkbox"> <label> <input type="checkbox" ng-model="overrided"> Block buttons</label> </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-6" style="position: relative;">
+    
+      <h3>Test button 1</h3>
+      <div ng-show="overrided" class="overlay"></div>
+      <p class="text-muted">Move the mouse on the button to reveal the shortcut.</p>
+
+	  <pre>
+&lt;button class="btn btn-primary btn-lg btn-block" 
+    ng-click="toastr.success('Action 1')" 
+    <strong>mk-shortcut="ctrl + enter"</strong>
+    <strong>mk-hint="title"</strong>
+    <strong>mk-hint-title="Be faster using the % shortcut"</strong>&gt;Action 1&lt;/button&gt;
+	  </pre>
+	  
+      <button class="btn btn-success btn-lg btn-block" 
+        ng-show="!invisible"
+        ng-click="toastr.success('Action 1')" 
+        ng-disabled="disabled"
+
+        mk-shortcut="ctrl + enter"
+        mk-hint="title"
+        mk-hint-title="Be faster using the % shortcut">Test button 1</button>
+
+    </div>
+	
+    <div class="col-md-6" style="position: relative;">
+    
+      <h3>Test button 2</h3>
+      <div ng-show="overrided" class="overlay"></div>
+      <p class="text-muted">By default, F3 key should trigger the browser find tool.</p>
+
+	  <pre>
+&lt;button class="btn btn-primary btn-lg btn-block" 
+    ng-click="toastr.info('Action 2')" 
+    <strong>mk-shortcut="F3"</strong>
+    <strong>mk-hint="inline"</strong>&gt;Action 2&lt;/button&gt;
+	
+	  </pre>
+	  
+      <button class="btn btn-primary btn-lg btn-block" 
+        ng-show="!invisible"
+        ng-click="toastr.info('Action 2')" 
+        ng-disabled="disabled"
+
+        mk-shortcut="F3"
+        mk-hint="inline">Test button 2</button>
+
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+  <script src="https://unpkg.com/angular-toastr/dist/angular-toastr.tpls.js"></script>
+
+  <script src="scripts.js"></script>
+  <script src="../src/mouse-killer.js"></script>
+
+</body>
+</html>
