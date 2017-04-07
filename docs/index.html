@@ -22,17 +22,22 @@
 	}
 	</style>
 </head>
-<body class="container" ng-controller="MainController">
+<body class="container" style="height: 2000px;" ng-controller="MainController">
 
   <h1>Mouse Killer demo</h1>
 
   <div class="row">
     <div class="col-md-12">
       <h3>Test settings</h3>
-
+    </div>
+    <div class="col-md-6">
       <div class="checkbox"> <label> <input type="checkbox" ng-model="invisible"> Hide buttons (ng-show)</label> </div>
+      <div class="checkbox"> <label> <input type="checkbox" ng-model="removed"> Remove buttons from DOM (ng-if)</label> </div>
       <div class="checkbox"> <label> <input type="checkbox" ng-model="disabled"> Disable buttons (ng-disabled)</label> </div>
       <div class="checkbox"> <label> <input type="checkbox" ng-model="overrided"> Block buttons</label> </div>
+    </div>
+    <div class="col-md-6">
+      <button class="btn btn-default" ng-click="openModal()" mk-shortcut="CTRL + M" mk-hint="inline">Open modal</button>
     </div>
   </div>
   
@@ -55,6 +60,8 @@
         ng-show="!invisible"
         ng-click="toastr.success('Action 1')" 
         ng-disabled="disabled"
+        ng-if="!removed"
+        id="btn1"
 
         mk-shortcut="ctrl + enter"
         mk-hint="title"
@@ -80,6 +87,7 @@
         ng-show="!invisible"
         ng-click="toastr.info('Action 2')" 
         ng-disabled="disabled"
+        ng-if="!removed"
 
         mk-shortcut="F3"
         mk-hint="inline">Test button 2</button>
@@ -87,10 +95,45 @@
     </div>
   </div>
 
+  <!-- Modal 1 -->
+  <script type="text/ng-template" id="modal1.html">
+    <div class="modal-header">
+      <h3 class="modal-title">The modal 1</h3>
+    </div>
+    <div class="modal-body">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam varius malesuada volutpat. Sed sit amet nunc quam. Fusce commodo vestibulum erat vitae placerat. Morbi pharetra ligula sit amet nibh porttitor ultricies. Donec metus lorem, congue vel ultrices eu, tincidunt sagittis augue. Sed rhoncus purus quam, sed mollis tortor consequat nec. Pellentesque tincidunt gravida erat, sit amet ornare nunc gravida hendrerit.</p>
+      <p>Aenean tempor enim at maximus semper. Cras ut dolor tellus. Etiam cursus ligula a eros blandit, eget lobortis nisl pellentesque. Ut sed lobortis nibh, quis feugiat nisl. Fusce sit amet magna accumsan, vestibulum orci et, bibendum lorem. Mauris fringilla blandit purus. Aenean suscipit placerat elit a dignissim. Phasellus ultrices lobortis semper.</p>
+      <p>Maecenas feugiat purus lorem, eu maximus sem finibus quis. Aenean id risus et erat imperdiet accumsan eu non elit. Nulla felis massa, accumsan id elementum nec, laoreet ut diam. Donec varius vulputate scelerisque. Mauris finibus sapien velit, eu placerat justo pretium vel. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce maximus diam nunc, quis efficitur orci gravida eget. Fusce ut euismod diam.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" type="button" ng-click="toastr.info('Action 1', 'Modal 1')" mk-shortcut="ALT + 1" mk-hint="inline">Action 1</button>
+      <button class="btn btn-primary" type="button" ng-click="toastr.info('Action 2', 'Modal 1')" mk-shortcut="ALT + 2" mk-hint="inline">Action 2</button>
+      <button class="btn btn-default" type="button" ng-click="openModal()" mk-shortcut="CTRL + M" mk-hint="inline">Open a second modal</button>
+      <button class="btn btn-default" type="button" ng-click="$close()" mk-shortcut="ESC" mk-hint="inline">Close</button>
+    </div>
+  </script>
+
+  <!-- Modal 2 -->
+  <script type="text/ng-template" id="modal2.html">
+    <div class="modal-header">
+      <h3 class="modal-title">The modal 2</h3>
+    </div>
+    <div class="modal-body">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam varius malesuada volutpat. Sed sit amet nunc quam. Fusce commodo vestibulum erat vitae placerat. Morbi pharetra ligula sit amet nibh porttitor ultricies. Donec metus lorem, congue vel ultrices eu, tincidunt sagittis augue. Sed rhoncus purus quam, sed mollis tortor consequat nec. Pellentesque tincidunt gravida erat, sit amet ornare nunc gravida hendrerit.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success" type="button" ng-click="toastr.success('Action 1', 'Modal 2')" mk-shortcut="ALT + 3" mk-hint="inline">Action 1</button>
+      <button class="btn btn-success" type="button" ng-click="toastr.success('Action 2', 'Modal 2')" mk-shortcut="ALT + 4" mk-hint="inline">Action 2</button>
+      <button class="btn btn-default" type="button" ng-click="$close()" mk-shortcut="ESC" mk-hint="inline">Close</button>
+    </div>
+  </script>
+
+  <!-- Scripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
   <script src="https://unpkg.com/angular-toastr/dist/angular-toastr.tpls.js"></script>
+  <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
 
   <script src="scripts.js"></script>
   <script src="mouse-killer.js"></script>
