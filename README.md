@@ -44,30 +44,34 @@ Complete example:
         mk-shortcut="ctrl + enter"
         mk-hint="title"
         mk-hint-title="The shortcut for this button is %"
-        mk-event="click">Button</button>
+        mk-event="click"
+        mk-prevent-default="true"
+        mk-stop-propagation="true">Button</button>
 
-| Attribute     | Required | Default     | Description |
-|---------------|----------|-------------|-------------|
-| mk-shortcut   | Yes      | -           | The key combination (see below). |
-| mk-hint       | No       | title       | `none` doesn't display a hint for the shortcut. <br />`title` display the shortcut in the *title* attribute of the element. <br />`inline` appends the shortcut to the inner text of the element. Example: **Button text** becomes **Button text (F8)** |
-| mk-hint-title | No       | Shortcut: % | If `mk-hint` is set to `title`, this attribute defines how the title will be. The character `%` will be replaced by the shortcut. |
-| mk-event      | No       | click       | The event to be triggered on the element when the shortcut is pressed. |
+| Attribute           | Required | Default     | Description                                                   |
+|---------------------|----------|-------------|---------------------------------------------------------------|
+| mk-shortcut         | Yes      | -           | The key combination (see below).                              |
+| mk-hint             | No       | title       | `none` doesn't display a hint for the shortcut. <br />`title` display the shortcut in the *title* attribute of the element. <br />`inline` appends the shortcut to the inner text of the element. Example: **Button text** becomes **Button text (F8)** |
+| mk-hint-title       | No       | Shortcut: % | If `mk-hint` is set to `title`, this attribute defines how the title will be. The character `%` will be replaced by the shortcut. |
+| mk-event            | No       | click       | The event to be triggered on the element when the shortcut is pressed. |
+| mk-prevent-default  | No       | true        | Choose if Mouse Killer will try to prevent the browser default action for the shortcut (like open the find tool if `F3` is pressed or open a file if `ctrl+o` is pressed). |
+| mk-stop-propagation | No       | true        | Choose if Mouse Killer will stop the event propagation to prevent others event handlers from firing another action. |
 
 ### Directive default configuration
 You can use the `.config()` of your application to set the directive default parameters (that can be overrided by some attribute).
 
-In the code below you can see all the three parameters that can be set.
+In the code below you can see all the parameters that can be set.
 
     app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
         mouseKillerConfigProvider.setHint('title');
         mouseKillerConfigProvider.setHintTitle('Be faster using the % shortcut');
         mouseKillerConfigProvider.setEvent('focus');
+        mouseKillerConfigProvider.setPreventDefault(true);
+        mouseKillerConfigProvider.setStopPropagation(false);
     }]);
 
 ### Non-overridable shortcuts
-Mouse Killer prevents the browser default action for a given shortcut. For example, if you define `ctrl+o` as a shortcut in your application, Mouse Killer will prevent the browser from openning a file.
-
-For security reasons, there are some shortcuts that can't be prevented and it varies by browser. For example, Google Chrome won't let you override the `ctrl+n` shortcut. 
+For security reasons, there are some shortcuts that can't be overrided/prevented and it varies by browser. For example, Google Chrome won't let you override the `ctrl+n` shortcut.
 
 ### Valid shortcuts
 Keys in a key combination should be separated by the `+` character. In your shortcut, you can have:

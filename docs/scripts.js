@@ -6,6 +6,8 @@ var app = angular.module('app', [
 
 app.config(['mouseKillerProvider', function (mouseKillerProvider) {
     mouseKillerProvider.setHint('title');
+    mouseKillerProvider.setPreventDefault(true);
+    mouseKillerProvider.setStopPropagation(true);
 }]);
 
 app.controller('MainController', function ($scope, toastr, $uibModal) {
