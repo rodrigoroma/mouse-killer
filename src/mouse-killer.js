@@ -16,6 +16,8 @@
 		this.event = 'click';
 		this.hint = 'title';
 		this.hintTitle = 'Shortcut: %';
+		this.preventDefault = true;
+		this.stopPropagation = true;
 
 		this.setEvent = function(event) {
 			this.event = event.toLowerCase();
@@ -27,6 +29,14 @@
 
 		this.setHintTitle = function(hintTitle) {
 			this.hintTitle = hintTitle;
+		}
+
+		this.setPreventDefault = function(preventDefault) {
+			this.preventDefault = preventDefault;
+		}
+
+		this.setStopPropagation = function(stopPropagation) {
+			this.stopPropagation = stopPropagation;
 		}
 
 		this.$get = function () {
@@ -41,7 +51,9 @@
 				mkShortcut: '@',
 				mkEvent: '@',
 				mkHint: '@',
-				mkHintTitle: '@'
+				mkHintTitle: '@',
+				mkPreventDefault: '=',
+				mkStopPropagation: '='
 			},
 			link: function(scope, element, attrs, controller) {
 				var modifiers = ['shift', 'ctrl', 'alt', 'meta'];
@@ -50,7 +62,9 @@
 					shortcut: scope.mkShortcut,
 					event: scope.mkEvent || mouseKiller.event,
 					hint: scope.mkHint || mouseKiller.hint,
-					hintTitle: scope.mkHintTitle || mouseKiller.hintTitle
+					hintTitle: scope.mkHintTitle || mouseKiller.hintTitle,
+					preventDefault: (scope.mkPreventDefault !== undefined) ? scope.mkPreventDefault : mouseKiller.preventDefault,
+					stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation
 				}
 
 				var init = function() {
@@ -101,7 +115,9 @@
 						return;
 					}
 
-					evt.preventDefault();
+					preventDefault(evt);
+
+					stopPropagation(evt);
 
 					element.trigger(config.event);
 				}
@@ -482,6 +498,34 @@
 
 				var cssProperty = function(elem, prop) {
 					return window.getComputedStyle(elem).getPropertyValue(prop);
+				}
+
+				var preventDefault = function(evt) {
+					if (config.preventDefault === false) {
+						return;
+					}
+
+					if (config.preventDefault === true) {
+						evt.preventDefault();
+						return;
+					}
+
+					evt.preventDefault();
+					console.warn('Invalid preventDefault value (should be a boolean)');
+				}
+
+				var stopPropagation = function(evt) {
+					if (config.stopPropagation === false) {
+						return;
+					}
+
+					if (config.stopPropagation === true) {
+						evt.stopPropagation();
+						return;
+					}
+
+					evt.stopPropagation();
+					console.warn('Invalid stopPropagation value (should be a boolean)');
 				}
 
 				init();
