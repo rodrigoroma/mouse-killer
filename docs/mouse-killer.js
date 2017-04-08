@@ -58,16 +58,12 @@
 			link: function(scope, element, attrs, controller) {
 				var modifiers = ['shift', 'ctrl', 'alt', 'meta'];
 
-				var config = {
-					shortcut: scope.mkShortcut,
-					event: scope.mkEvent || mouseKiller.event,
-					hint: scope.mkHint || mouseKiller.hint,
-					hintTitle: scope.mkHintTitle || mouseKiller.hintTitle,
-					preventDefault: (scope.mkPreventDefault !== undefined) ? scope.mkPreventDefault : mouseKiller.preventDefault,
-					stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation
-				}
+				var config = {}
 
 				var init = function() {
+					// Sets the "config" object
+					initializeCOnfiguration();
+					
 					// Add hint to the element
 					addHint();
 
@@ -79,7 +75,57 @@
 					});
 				}
 
+				var initializeCOnfiguration = function() {
+					config = {
+						shortcut: getShortcutObject(scope.mkShortcut),
+						event: scope.mkEvent || mouseKiller.event,
+						hint: scope.mkHint || mouseKiller.hint,
+						hintTitle: scope.mkHintTitle || mouseKiller.hintTitle,
+						preventDefault: (scope.mkPreventDefault !== undefined) ? scope.mkPreventDefault : mouseKiller.preventDefault,
+						stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation
+					}
+				}
+
+				var getShortcutObject = function(shortcut) {
+					var shortcutObject = {
+						keyCode: null
+					}
+
+					for (var i in modifiers) {
+						shortcutObject[ modifiers[i] ] = false;
+					}
+
+					var keys = shortcut.split("+")
+
+					for (var i in keys) {
+						var key = keys[i];
+
+						key = key.toLowerCase();
+						key = key.trim();
+
+						// Key is a modifier key
+						if (modifiers.indexOf(key) > -1) {
+							shortcutObject[key] = true;
+							continue;
+						}
+
+						// Key is a normal key
+						if (shortcutObject.keyCode != null) {
+							console.warn("Invalid shortcut " + shortcut + ". You can have only one normal key (and any number of modifier keys).")
+							return null;
+						}
+
+						shortcutObject.keyCode = getKeyCode(key);
+					}
+
+					return shortcutObject;
+				}
+
 				var addHint = function() {
+					if (config.shortcut == null) {
+						return;
+					}
+
 					var shortcutText = attrs.mkShortcut
 						.toUpperCase()
 						.trim()
@@ -123,39 +169,27 @@
 				}
 				
 				var matchKeys = function(evt) {
-					var i;
-					var keys = config.shortcut.split("+")
-
-					for (i in keys) {
-						var key = keys[i];
-
-						key = key.toLowerCase();
-						key = key.trim();
-
-						if (matchKey(key, evt) == false) {
-							return false;
-						}						
+					if (config.shortcut == null) {
+						return false;
 					}
-
-					return true;
-				}
-
-				var matchKey = function(key, evt) {
-					// If the key is a modifier (alt, ctrl, ...)
-					if (modifiers.indexOf(key) > -1) {
-						return evt[key + 'Key'];
-					}
-
-					// If the key is not a modifier key
-					var keyCode = getKeyCode(key);
 
 					var evtKeyCode = evt.which || evt.keyCode;
 
-					if (keyCode == evtKeyCode) {
-						return true;
+					// Validate keyCode
+					if (config.shortcut.keyCode && config.shortcut.keyCode != evtKeyCode) {
+						return false;
 					}
 
-					return false;
+					// Validate modifier keys
+					for (var i in modifiers) {
+						var m = modifiers[i];
+
+						if (config.shortcut[m] != evt[m + 'Key']) {
+							return false;
+						} 
+					}
+					
+					return true;
 				}
 
 				var getKeyCode = function(key) {
@@ -268,7 +302,6 @@
 					return checkElementOnPoint(elem, elementPoint);
 				}
 				
-				// Check if some CSS rule makes the element invisible
 				var isVisible = function(elem) {
 					var style = getComputedStyle(elem);
 
