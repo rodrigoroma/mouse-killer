@@ -1,5 +1,5 @@
 /*
- * mouse-killer v0.2.1
+ * mouse-killer v0.3.0
  *
  * An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).
  *
@@ -16,6 +16,8 @@
 		this.event = 'click';
 		this.hint = 'title';
 		this.hintTitle = 'Shortcut: %';
+		this.preventDefault = true;
+		this.stopPropagation = true;
 
 		this.setEvent = function(event) {
 			this.event = event.toLowerCase();
@@ -27,6 +29,14 @@
 
 		this.setHintTitle = function(hintTitle) {
 			this.hintTitle = hintTitle;
+		}
+
+		this.setPreventDefault = function(preventDefault) {
+			this.preventDefault = preventDefault;
+		}
+
+		this.setStopPropagation = function(stopPropagation) {
+			this.stopPropagation = stopPropagation;
 		}
 
 		this.$get = function () {
@@ -41,19 +51,19 @@
 				mkShortcut: '@',
 				mkEvent: '@',
 				mkHint: '@',
-				mkHintTitle: '@'
+				mkHintTitle: '@',
+				mkPreventDefault: '=',
+				mkStopPropagation: '='
 			},
 			link: function(scope, element, attrs, controller) {
 				var modifiers = ['shift', 'ctrl', 'alt', 'meta'];
 
-				var config = {
-					shortcut: scope.mkShortcut,
-					event: scope.mkEvent || mouseKiller.event,
-					hint: scope.mkHint || mouseKiller.hint,
-					hintTitle: scope.mkHintTitle || mouseKiller.hintTitle
-				}
+				var config = {}
 
 				var init = function() {
+					// Sets the "config" object
+					initializeCOnfiguration();
+					
 					// Add hint to the element
 					addHint();
 
@@ -65,40 +75,121 @@
 					});
 				}
 
-				var matchKeys = function(evt) {
-					var i;
-					var keys = config.shortcut.split("+")
+				var initializeCOnfiguration = function() {
+					config = {
+						shortcut: getShortcutObject(scope.mkShortcut),
+						event: scope.mkEvent || mouseKiller.event,
+						hint: scope.mkHint || mouseKiller.hint,
+						hintTitle: scope.mkHintTitle || mouseKiller.hintTitle,
+						preventDefault: (scope.mkPreventDefault !== undefined) ? scope.mkPreventDefault : mouseKiller.preventDefault,
+						stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation
+					}
+				}
 
-					for (i in keys) {
+				var getShortcutObject = function(shortcut) {
+					var shortcutObject = {
+						keyCode: null
+					}
+
+					for (var i in modifiers) {
+						shortcutObject[ modifiers[i] ] = false;
+					}
+
+					var keys = shortcut.split("+")
+
+					for (var i in keys) {
 						var key = keys[i];
 
 						key = key.toLowerCase();
 						key = key.trim();
 
-						if (matchKey(key, evt) == false) {
-							return false;
-						}						
+						// Key is a modifier key
+						if (modifiers.indexOf(key) > -1) {
+							shortcutObject[key] = true;
+							continue;
+						}
+
+						// Key is a normal key
+						if (shortcutObject.keyCode != null) {
+							console.warn("Invalid shortcut " + shortcut + ". You can have only one normal key (and any number of modifier keys).")
+							return null;
+						}
+
+						shortcutObject.keyCode = getKeyCode(key);
 					}
 
-					return true;
+					return shortcutObject;
 				}
 
-				var matchKey = function(key, evt) {
-					// If the key is a modifier (alt, ctrl, ...)
-					if (modifiers.indexOf(key) > -1) {
-						return evt[key + 'Key'];
+				var addHint = function() {
+					if (config.shortcut == null) {
+						return;
 					}
 
-					// If the key is not a modifier key
-					var keyCode = getKeyCode(key);
+					var shortcutText = attrs.mkShortcut
+						.toUpperCase()
+						.trim()
+						.replace(/ *\+ */g, "+");
+
+					if (config.hint == 'title') {
+						var hintTitle = config.hintTitle.replace("%", shortcutText)
+
+						element.attr('title', hintTitle);
+					}
+
+					if (config.hint == 'inline') {
+						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
+					}
+				}
+
+				var handleKeydown = function(evt) {
+					var elem = element[0];
+
+					if ((elem instanceof Element) == false)  {
+						throw Error('DomUtil: elem is not an element.');
+					}
+
+					// Checks if the pressed keys satisfy the shortcut
+					if (matchKeys(evt) == false) {
+						return;
+					}
+
+					// TODO: Check here if focus is on a text input
+
+					// Check if the user could manually click the button
+					if (isClickable(elem) == false) {
+						return;
+					}
+
+					preventDefault(evt);
+
+					stopPropagation(evt);
+
+					element.trigger(config.event);
+				}
+				
+				var matchKeys = function(evt) {
+					if (config.shortcut == null) {
+						return false;
+					}
 
 					var evtKeyCode = evt.which || evt.keyCode;
 
-					if (keyCode == evtKeyCode) {
-						return true;
+					// Validate keyCode
+					if (config.shortcut.keyCode && config.shortcut.keyCode != evtKeyCode) {
+						return false;
 					}
 
-					return false;
+					// Validate modifier keys
+					for (var i in modifiers) {
+						var m = modifiers[i];
+
+						if (config.shortcut[m] != evt[m + 'Key']) {
+							return false;
+						} 
+					}
+					
+					return true;
 				}
 
 				var getKeyCode = function(key) {
@@ -190,7 +281,27 @@
 					}
 				}
 
-				// Check if some CSS rule makes the element invisible
+				var isClickable = function(elem) {
+					// Checks if the element is hidden by a CSS rule
+					if (isVisible(elem) == false) {
+						return false;
+					}
+
+					// Check if the element is not disabled
+					if (isDisabled(elem) == true) {
+						return false;
+					}
+
+					// Get the element coordinates on the viewport (null if the element is not on the visible part of the screen)
+					var elementPoint = getElementViewportPosition(elem);
+
+					if (elementPoint == null) {
+						return !isOverrided(elem);
+					}
+
+					return checkElementOnPoint(elem, elementPoint);
+				}
+				
 				var isVisible = function(elem) {
 					var style = getComputedStyle(elem);
 
@@ -211,6 +322,16 @@
 					}
 
 					return true;
+				}
+
+				var isDisabled = function(elem) {
+					if (elem.disabled) {
+						return true;
+					}
+
+					// TODO: check if the element has the "disabled" attribute
+
+					return false;
 				}
 
 				var getElementViewportPosition = function(elem) {
@@ -412,97 +533,34 @@
 					return window.getComputedStyle(elem).getPropertyValue(prop);
 				}
 
-				var isDisabled = function(elem) {
-					if (elem.disabled) {
-						return true;
-					}
-
-					// TODO: check if the element has the "disabled" attribute
-
-					return false;
-				}
-
-				var addHint = function() {
-					var shortcutText = attrs.mkShortcut
-						.toUpperCase()
-						.trim()
-						.replace(/ *\+ */g, "+");
-
-					if (config.hint == 'title') {
-						var hintTitle = config.hintTitle.replace("%", shortcutText)
-
-						element.attr('title', hintTitle);
-					}
-
-					if (config.hint == 'inline') {
-						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
-					}
-				}
-
-				var blurElement = function(evt) {
-					if (config.event != 'click') {
+				var preventDefault = function(evt) {
+					if (config.preventDefault === false) {
 						return;
 					}
 
-					if (element[0] != document.activeElement) {
+					if (config.preventDefault === true) {
+						evt.preventDefault();
 						return;
 					}
-
-					if (config.shortcut.match(/^ *enter *$/i) == false) {
-						return;
-					}
-					
-					element.trigger('blur');
-				}
-
-				var isClickable = function(elem) {
-					// Checks if the element is hidden by a CSS rule
-					if (isVisible(elem) == false) {
-						return false;
-					}
-
-					// Check if the element is not disabled
-					if (isDisabled(elem) == true) {
-						return false;
-					}
-
-					// Get the element coordinates on the viewport (null if the element is not on the visible part of the screen)
-					var elementPoint = getElementViewportPosition(elem);
-
-					if (elementPoint == null) {
-						return !isOverrided(elem);
-					}
-
-					return checkElementOnPoint(elem, elementPoint);
-				}
-
-				var handleKeydown = function(evt) {
-					var elem = element[0];
-
-					if ((elem instanceof Element) == false)  {
-						throw Error('DomUtil: elem is not an element.');
-					}
-
-					// Checks if the pressed keys satisfy the shortcut
-					if (matchKeys(evt) == false) {
-						return;
-					}
-
-					// TODO: Check here if focus is on a text input
-
-					// Check if the user could manually click the button
-					if (isClickable(elem) == false) {
-						return;
-					}
-
-					// Prevents double-triggering the click on a button if the shortcut é only the enter key
-					blurElement(evt);
 
 					evt.preventDefault();
-
-					element.trigger(config.event);
+					console.warn('Invalid preventDefault value (should be a boolean)');
 				}
-				
+
+				var stopPropagation = function(evt) {
+					if (config.stopPropagation === false) {
+						return;
+					}
+
+					if (config.stopPropagation === true) {
+						evt.stopPropagation();
+						return;
+					}
+
+					evt.stopPropagation();
+					console.warn('Invalid stopPropagation value (should be a boolean)');
+				}
+
 				init();
 			}
 		};

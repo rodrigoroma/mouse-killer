@@ -6,6 +6,8 @@ var app = angular.module('app', [
 
 app.config(['mouseKillerProvider', function (mouseKillerProvider) {
     mouseKillerProvider.setHint('title');
+    mouseKillerProvider.setPreventDefault(true);
+    mouseKillerProvider.setStopPropagation(true);
 }]);
 
 app.controller('MainController', function ($scope, toastr, $uibModal) {
@@ -30,5 +32,23 @@ app.controller('MainController', function ($scope, toastr, $uibModal) {
             }
         });
     };
+
+    $scope.openSweetAlert = function () {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'success',
+
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'No',
+
+            confirmButtonText: 'Yes'
+        }).then(function () {
+            toastr.info('You clicked yes')
+        }, function () {
+            toastr.error('You clicked no')
+        })
+    }
 
 });
