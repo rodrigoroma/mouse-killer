@@ -101,9 +101,6 @@
 						return;
 					}
 
-					// Prevents double-triggering the click on a button if the shortcut é only the enter key
-					blurElement(evt);
-
 					evt.preventDefault();
 
 					element.trigger(config.event);
@@ -485,22 +482,6 @@
 
 				var cssProperty = function(elem, prop) {
 					return window.getComputedStyle(elem).getPropertyValue(prop);
-				}
-
-				var blurElement = function(evt) {
-					if (config.event != 'click') {
-						return;
-					}
-
-					if (element[0] != document.activeElement) {
-						return;
-					}
-
-					if (config.shortcut.match(/^ *enter *$/i) == false) {
-						return;
-					}
-					
-					element.trigger('blur');
 				}
 
 				init();
