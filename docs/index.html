@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="app">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Mouse Killer demo</title>
+  <title>Mouse Killer demo</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/angular-toastr/dist/angular-toastr.css" />
-	
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/angular-toastr/dist/angular-toastr.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/6.5.6/sweetalert2.min.css">	
+
 	<style>
 	.overlay {
 		position: absolute; 
@@ -38,6 +39,10 @@
     </div>
     <div class="col-md-6">
       <button class="btn btn-default" ng-click="openModal()" mk-shortcut="CTRL + M" mk-hint="inline">Open modal</button>
+      <button class="btn btn-default" ng-click="openSweetAlert()" mk-shortcut="ESC" mk-hint="inline">Open SweetAlert</button>
+      <br><br>
+      <button class="btn btn-default" ng-click="toastr.info('Duplicated 1')" mk-shortcut="ctrl+d" mk-hint="inline">Duplicated 1</button>
+      <button class="btn btn-default" ng-click="toastr.info('Duplicated 2')" mk-shortcut="ctrl+d" mk-hint="inline">Duplicated 2</button>
     </div>
   </div>
   
@@ -134,6 +139,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
   <script src="https://unpkg.com/angular-toastr/dist/angular-toastr.tpls.js"></script>
   <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/sweetalert2/6.5.6/sweetalert2.min.js"></script>
+
 
   <script src="scripts.js"></script>
   <script src="mouse-killer.js"></script>
