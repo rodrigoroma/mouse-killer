@@ -65,6 +65,50 @@
 					});
 				}
 
+				var addHint = function() {
+					var shortcutText = attrs.mkShortcut
+						.toUpperCase()
+						.trim()
+						.replace(/ *\+ */g, "+");
+
+					if (config.hint == 'title') {
+						var hintTitle = config.hintTitle.replace("%", shortcutText)
+
+						element.attr('title', hintTitle);
+					}
+
+					if (config.hint == 'inline') {
+						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
+					}
+				}
+
+				var handleKeydown = function(evt) {
+					var elem = element[0];
+
+					if ((elem instanceof Element) == false)  {
+						throw Error('DomUtil: elem is not an element.');
+					}
+
+					// Checks if the pressed keys satisfy the shortcut
+					if (matchKeys(evt) == false) {
+						return;
+					}
+
+					// TODO: Check here if focus is on a text input
+
+					// Check if the user could manually click the button
+					if (isClickable(elem) == false) {
+						return;
+					}
+
+					// Prevents double-triggering the click on a button if the shortcut é only the enter key
+					blurElement(evt);
+
+					evt.preventDefault();
+
+					element.trigger(config.event);
+				}
+				
 				var matchKeys = function(evt) {
 					var i;
 					var keys = config.shortcut.split("+")
@@ -190,6 +234,27 @@
 					}
 				}
 
+				var isClickable = function(elem) {
+					// Checks if the element is hidden by a CSS rule
+					if (isVisible(elem) == false) {
+						return false;
+					}
+
+					// Check if the element is not disabled
+					if (isDisabled(elem) == true) {
+						return false;
+					}
+
+					// Get the element coordinates on the viewport (null if the element is not on the visible part of the screen)
+					var elementPoint = getElementViewportPosition(elem);
+
+					if (elementPoint == null) {
+						return !isOverrided(elem);
+					}
+
+					return checkElementOnPoint(elem, elementPoint);
+				}
+				
 				// Check if some CSS rule makes the element invisible
 				var isVisible = function(elem) {
 					var style = getComputedStyle(elem);
@@ -211,6 +276,16 @@
 					}
 
 					return true;
+				}
+
+				var isDisabled = function(elem) {
+					if (elem.disabled) {
+						return true;
+					}
+
+					// TODO: check if the element has the "disabled" attribute
+
+					return false;
 				}
 
 				var getElementViewportPosition = function(elem) {
@@ -412,33 +487,6 @@
 					return window.getComputedStyle(elem).getPropertyValue(prop);
 				}
 
-				var isDisabled = function(elem) {
-					if (elem.disabled) {
-						return true;
-					}
-
-					// TODO: check if the element has the "disabled" attribute
-
-					return false;
-				}
-
-				var addHint = function() {
-					var shortcutText = attrs.mkShortcut
-						.toUpperCase()
-						.trim()
-						.replace(/ *\+ */g, "+");
-
-					if (config.hint == 'title') {
-						var hintTitle = config.hintTitle.replace("%", shortcutText)
-
-						element.attr('title', hintTitle);
-					}
-
-					if (config.hint == 'inline') {
-						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
-					}
-				}
-
 				var blurElement = function(evt) {
 					if (config.event != 'click') {
 						return;
@@ -455,54 +503,6 @@
 					element.trigger('blur');
 				}
 
-				var isClickable = function(elem) {
-					// Checks if the element is hidden by a CSS rule
-					if (isVisible(elem) == false) {
-						return false;
-					}
-
-					// Check if the element is not disabled
-					if (isDisabled(elem) == true) {
-						return false;
-					}
-
-					// Get the element coordinates on the viewport (null if the element is not on the visible part of the screen)
-					var elementPoint = getElementViewportPosition(elem);
-
-					if (elementPoint == null) {
-						return !isOverrided(elem);
-					}
-
-					return checkElementOnPoint(elem, elementPoint);
-				}
-
-				var handleKeydown = function(evt) {
-					var elem = element[0];
-
-					if ((elem instanceof Element) == false)  {
-						throw Error('DomUtil: elem is not an element.');
-					}
-
-					// Checks if the pressed keys satisfy the shortcut
-					if (matchKeys(evt) == false) {
-						return;
-					}
-
-					// TODO: Check here if focus is on a text input
-
-					// Check if the user could manually click the button
-					if (isClickable(elem) == false) {
-						return;
-					}
-
-					// Prevents double-triggering the click on a button if the shortcut é only the enter key
-					blurElement(evt);
-
-					evt.preventDefault();
-
-					element.trigger(config.event);
-				}
-				
 				init();
 			}
 		};
