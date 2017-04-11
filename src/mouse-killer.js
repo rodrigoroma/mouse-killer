@@ -1,5 +1,5 @@
 /*
- * mouse-killer v0.3.0
+ * mouse-killer v0.3.1
  *
  * An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).
  *
@@ -62,7 +62,12 @@
 
 				var init = function() {
 					// Sets the "config" object
-					initializeCOnfiguration();
+					initializeConfiguration();
+
+					// There is no shortcut defined
+					if (config.shortcut == null) {
+						return;
+					}
 					
 					// Add hint to the element
 					addHint();
@@ -75,7 +80,7 @@
 					});
 				}
 
-				var initializeCOnfiguration = function() {
+				var initializeConfiguration = function() {
 					config = {
 						shortcut: getShortcutObject(scope.mkShortcut),
 						event: scope.mkEvent || mouseKiller.event,
@@ -87,6 +92,12 @@
 				}
 
 				var getShortcutObject = function(shortcut) {
+					// Check for blank shortcut
+					if (!shortcut) {
+						return null;
+					}
+
+					// Initializes the shortcut object
 					var shortcutObject = {
 						keyCode: null
 					}
@@ -111,11 +122,15 @@
 
 						// Key is a normal key
 						if (shortcutObject.keyCode != null) {
-							console.warn("Invalid shortcut " + shortcut + ". You can have only one normal key (and any number of modifier keys).")
+							throw Error("Invalid shortcut \"" + shortcut + "\". You can have only one normal key (and any number of modifier keys).");
 							return null;
 						}
 
-						shortcutObject.keyCode = getKeyCode(key);
+						try {
+							shortcutObject.keyCode = getKeyCode(key);
+						} catch (err) {
+							throw Error("Error in \"" + shortcut + "\" shortcut :: " + err);
+						}
 					}
 
 					return shortcutObject;
@@ -138,7 +153,7 @@
 					}
 
 					if (config.hint == 'inline') {
-						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
+						element[0].appendChild( document.createTextNode(" (" + shortcutText + ")") );
 					}
 				}
 
