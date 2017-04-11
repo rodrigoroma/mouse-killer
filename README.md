@@ -62,12 +62,12 @@ You can use the `.config()` of your application to set the directive default par
 
 In the code below you can see all the parameters that can be set.
 
-    app.config(['mouseKillerConfigProvider', function(mouseKillerConfigProvider) {
-        mouseKillerConfigProvider.setHint('title');
-        mouseKillerConfigProvider.setHintTitle('Be faster using the % shortcut');
-        mouseKillerConfigProvider.setEvent('focus');
-        mouseKillerConfigProvider.setPreventDefault(true);
-        mouseKillerConfigProvider.setStopPropagation(false);
+    app.config(['mouseKillerProvider', function(mouseKillerProvider) {
+        mouseKillerProvider.setHint('title');
+        mouseKillerProvider.setHintTitle('Be faster using the % shortcut');
+        mouseKillerProvider.setEvent('focus');
+        mouseKillerProvider.setPreventDefault(true);
+        mouseKillerProvider.setStopPropagation(false);
     }]);
 
 ### Non-overridable shortcuts
