@@ -138,7 +138,7 @@
 					}
 
 					if (config.hint == 'inline') {
-						element[0].innerText = element[0].innerText + " (" + shortcutText + ")"
+						element[0].appendChild( document.createTextNode(" (" + shortcutText + ")") );
 					}
 				}
 
