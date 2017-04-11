@@ -62,7 +62,12 @@
 
 				var init = function() {
 					// Sets the "config" object
-					initializeCOnfiguration();
+					initializeConfiguration();
+
+					// There is no shortcut defined
+					if (config.shortcut == null) {
+						return;
+					}
 					
 					// Add hint to the element
 					addHint();
@@ -75,7 +80,7 @@
 					});
 				}
 
-				var initializeCOnfiguration = function() {
+				var initializeConfiguration = function() {
 					config = {
 						shortcut: getShortcutObject(scope.mkShortcut),
 						event: scope.mkEvent || mouseKiller.event,
@@ -87,6 +92,12 @@
 				}
 
 				var getShortcutObject = function(shortcut) {
+					// Check for blank shortcut
+					if (!shortcut || shortcut.trim().length == 0) {
+						return null;
+					}
+
+					// Initializes the shortcut object
 					var shortcutObject = {
 						keyCode: null
 					}
