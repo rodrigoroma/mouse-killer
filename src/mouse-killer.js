@@ -93,7 +93,7 @@
 
 				var getShortcutObject = function(shortcut) {
 					// Check for blank shortcut
-					if (!shortcut || shortcut.trim().length == 0) {
+					if (!shortcut) {
 						return null;
 					}
 
@@ -122,11 +122,15 @@
 
 						// Key is a normal key
 						if (shortcutObject.keyCode != null) {
-							console.warn("Invalid shortcut " + shortcut + ". You can have only one normal key (and any number of modifier keys).")
+							throw Error("Invalid shortcut \"" + shortcut + "\". You can have only one normal key (and any number of modifier keys).");
 							return null;
 						}
 
-						shortcutObject.keyCode = getKeyCode(key);
+						try {
+							shortcutObject.keyCode = getKeyCode(key);
+						} catch (err) {
+							throw Error("Error in \"" + shortcut + "\" shortcut :: " + err);
+						}
 					}
 
 					return shortcutObject;
