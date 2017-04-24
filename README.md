@@ -46,7 +46,8 @@ Complete example:
         mk-hint-title="The shortcut for this button is %"
         mk-event="click"
         mk-prevent-default="true"
-        mk-stop-propagation="true">Button</button>
+        mk-stop-propagation="true"
+        mk-enabled="auto">Button</button>
 
 | Attribute           | Required | Default     | Description                                                   |
 |---------------------|----------|-------------|---------------------------------------------------------------|
@@ -56,6 +57,7 @@ Complete example:
 | mk-event            | No       | click       | The event to be triggered on the element when the shortcut is pressed. |
 | mk-prevent-default  | No       | true        | Choose if Mouse Killer will try to prevent the browser default action for the shortcut (like open the find tool if `F3` is pressed or open a file if `ctrl+o` is pressed). |
 | mk-stop-propagation | No       | true        | Choose if Mouse Killer will stop the event propagation to prevent others event handlers from firing another action. |
+| mk-enabled          | No       | auto        | An expression that returns one of the following values:<br /> `true` the shortcut is enabled.<br />`false` the shortcut is disabled.<br />`auto` this string makes the shortcut enabled if the element is clickable EXCEPT if the focus is on an input field AND the shortcut has only one key.<br />`function(elem, evt, isClickable)` a function that returns true or false. The first parameter is the element where the shortcut is bound to. The second parameter is the kespressed event. The third parameter is a boolean that indicates if the user could manually click the element (i.e. it's not disabled, hidden or overrided). |
 
 ### Directive default configuration
 You can use the `.config()` of your application to set the directive default parameters (that can be overrided by some attribute).
@@ -68,6 +70,7 @@ In the code below you can see all the parameters that can be set.
         mouseKillerProvider.setEvent('focus');
         mouseKillerProvider.setPreventDefault(true);
         mouseKillerProvider.setStopPropagation(false);
+        mouseKillerProvider.setEnabled(true);
     }]);
 
 ### Non-overridable shortcuts
