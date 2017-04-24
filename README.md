@@ -23,15 +23,17 @@ Not sure if Mouse Killer is the option that best suit your needs? So take a look
 
 ## Installation
 
-1. Use Bower to add Mouse Killer to your project (you can also download `mouse-killer.js` file if you want).
+1. Add Mouse Killer to your project.
 
-        bower install mouse-killer --save 
+    * Using **Bower**: `bower install mouse-killer --save`
+    * Using **NPM**: `npm install mouse-killer --save`
+    * Or directly downloading `dist/mouse-killer.js` file.
 
-2. Include `mouse-killer.js` in your HTML: 
+2. Include `mouse-killer.js` in your HTML:
     
-        <script src="/path/to/mouse-killer.js"></script>
+        <script src="/bower_components/mouse-killer/dist/mouse-killer.min.js"></script>
 
-3. Add **mouseKiller** as a dependency to your app:
+3. Add **mouseKiller** as a dependency to your AngularJS app:
 
         angular.module('myApp', [
             'mouseKiller'
