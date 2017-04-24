@@ -1,0 +1,36 @@
+{
+  "name": "mouse-killer",
+  "version": "0.4.0",
+  "description": "An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).",
+  "main": "src/mouse-killer.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodrigoroma/mouse-killer.git"
+  },
+  "keywords": [
+    "angularjs",
+    "keyboard-shortcuts",
+    "shortcut",
+    "angular"
+  ],
+  "author": "Rodrigo Roma",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rodrigoroma/mouse-killer/issues"
+  },
+  "homepage": "https://github.com/rodrigoroma/mouse-killer#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.1.2"
+  },
+  "dependencies": {
+    "angular": "1"
+  }
+}

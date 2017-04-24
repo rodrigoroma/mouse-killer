@@ -1,5 +1,5 @@
 /*
- * mouse-killer v0.3.1
+ * mouse-killer v0.4.0
  *
  * An Angular.JS directive to bind keyboard shortcuts to buttons (or any other DOM element).
  *
@@ -7,7 +7,7 @@
  * License: MIT
  */
 
-(function() {
+(function () {
 	"use strict";
 
 	var mousekiller = angular.module('mouseKiller', []);
@@ -18,25 +18,30 @@
 		this.hintTitle = 'Shortcut: %';
 		this.preventDefault = true;
 		this.stopPropagation = true;
+		this.enabled = "auto";
 
-		this.setEvent = function(event) {
+		this.setEvent = function (event) {
 			this.event = event.toLowerCase();
 		};
 
-		this.setHint = function(hint) {
+		this.setHint = function (hint) {
 			this.hint = hint.toLowerCase();
 		};
 
-		this.setHintTitle = function(hintTitle) {
+		this.setHintTitle = function (hintTitle) {
 			this.hintTitle = hintTitle;
 		}
 
-		this.setPreventDefault = function(preventDefault) {
+		this.setPreventDefault = function (preventDefault) {
 			this.preventDefault = preventDefault;
 		}
 
-		this.setStopPropagation = function(stopPropagation) {
+		this.setStopPropagation = function (stopPropagation) {
 			this.stopPropagation = stopPropagation;
+		}
+
+		this.setEnabled = function (enabled) {
+			this.enabled = enabled;
 		}
 
 		this.$get = function () {
@@ -44,7 +49,7 @@
 		};
 	})
 
-	mousekiller.directive('mkShortcut', ['$document', 'mouseKiller', function($document, mouseKiller) {
+	mousekiller.directive('mkShortcut', ['$document', 'mouseKiller', function ($document, mouseKiller) {
 		return {
 			restrict: 'A',
 			scope: {
@@ -53,14 +58,15 @@
 				mkHint: '@',
 				mkHintTitle: '@',
 				mkPreventDefault: '=',
-				mkStopPropagation: '='
+				mkStopPropagation: '=',
+				mkEnabled: '='
 			},
-			link: function(scope, element, attrs, controller) {
+			link: function (scope, element, attrs, controller) {
 				var modifiers = ['shift', 'ctrl', 'alt', 'meta'];
 
 				var config = {}
 
-				var init = function() {
+				var init = function () {
 					// Sets the "config" object
 					initializeConfiguration();
 
@@ -68,30 +74,31 @@
 					if (config.shortcut == null) {
 						return;
 					}
-					
+
 					// Add hint to the element
 					addHint();
 
 					// Bind the keydown event to the handler function
 					$document.on('keydown', handleKeydown);
-					
-					element.on('$destroy', function() {
+
+					element.on('$destroy', function () {
 						$document.off('keydown', handleKeydown);
 					});
 				}
 
-				var initializeConfiguration = function() {
+				var initializeConfiguration = function () {
 					config = {
 						shortcut: getShortcutObject(scope.mkShortcut),
 						event: scope.mkEvent || mouseKiller.event,
 						hint: scope.mkHint || mouseKiller.hint,
 						hintTitle: scope.mkHintTitle || mouseKiller.hintTitle,
 						preventDefault: (scope.mkPreventDefault !== undefined) ? scope.mkPreventDefault : mouseKiller.preventDefault,
-						stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation
+						stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation,
+						enabled: (scope.mkEnabled !== undefined) ? scope.mkEnabled : mouseKiller.enabled
 					}
 				}
 
-				var getShortcutObject = function(shortcut) {
+				var getShortcutObject = function (shortcut) {
 					// Check for blank shortcut
 					if (!shortcut) {
 						return null;
@@ -103,7 +110,7 @@
 					}
 
 					for (var i in modifiers) {
-						shortcutObject[ modifiers[i] ] = false;
+						shortcutObject[modifiers[i]] = false;
 					}
 
 					var keys = shortcut.split("+")
@@ -129,14 +136,27 @@
 						try {
 							shortcutObject.keyCode = getKeyCode(key);
 						} catch (err) {
-							throw Error("Error in \"" + shortcut + "\" shortcut :: " + err);
+							throw Error("Error in '" + shortcut + "' shortcut :: " + err);
+						}
+					}
+
+					// Calculate the number of keys
+					shortcutObject.numberOfKeys = 0;
+
+					if (shortcutObject.keyCode) {
+						shortcutObject.numberOfKeys++;
+					}
+
+					for (var i in modifiers) {
+						if (shortcutObject[modifiers[i]] == true) {
+							shortcutObject.numberOfKeys++;
 						}
 					}
 
 					return shortcutObject;
 				}
 
-				var addHint = function() {
+				var addHint = function () {
 					if (config.shortcut == null) {
 						return;
 					}
@@ -153,14 +173,14 @@
 					}
 
 					if (config.hint == 'inline') {
-						element[0].appendChild( document.createTextNode(" (" + shortcutText + ")") );
+						element[0].appendChild(document.createTextNode(" (" + shortcutText + ")"));
 					}
 				}
 
-				var handleKeydown = function(evt) {
+				var handleKeydown = function (evt) {
 					var elem = element[0];
 
-					if ((elem instanceof Element) == false)  {
+					if ((elem instanceof Element) == false) {
 						throw Error('DomUtil: elem is not an element.');
 					}
 
@@ -169,10 +189,7 @@
 						return;
 					}
 
-					// TODO: Check here if focus is on a text input
-
-					// Check if the user could manually click the button
-					if (isClickable(elem) == false) {
+					if (isEnabled(elem, evt) == false) {
 						return;
 					}
 
@@ -182,8 +199,8 @@
 
 					element.trigger(config.event);
 				}
-				
-				var matchKeys = function(evt) {
+
+				var matchKeys = function (evt) {
 					if (config.shortcut == null) {
 						return false;
 					}
@@ -201,20 +218,20 @@
 
 						if (config.shortcut[m] != evt[m + 'Key']) {
 							return false;
-						} 
+						}
 					}
-					
+
 					return true;
 				}
 
-				var getKeyCode = function(key) {
+				var getKeyCode = function (key) {
 					// Checks if the key is already a keycode like {61}
 					if (key.match(/^{ *\d+ *}$/)) {
 						return key.replace(/^{ *(\d+) *}$/, "$1");
 					}
 
 					// If it is a literal char
-					switch(key) {
+					switch (key) {
 						case 'backspace': return 8;
 						case 'tab': return 9;
 						case 'enter': return 13;
@@ -296,7 +313,45 @@
 					}
 				}
 
-				var isClickable = function(elem) {
+				var isEnabled = function (elem, evt) {
+
+					// true
+					if (config.enabled === true) {
+						return true;
+					}
+
+					// false
+					if (config.enabled === false) {
+						return false;
+					}
+
+					// auto
+					if (typeof config.enabled === "string" && config.enabled === "auto") {
+						var restrictedTags = ["INPUT", "SELECT", "TEXTAREA"];
+
+						// Check focus
+						if (config.shortcut.numberOfKeys < 2 && restrictedTags.indexOf(document.activeElement.nodeName) > -1) {
+							return false;
+						}
+
+						// Check if the user could manually click the button
+						if (isClickable(elem) == false) {
+							return false;
+						}
+
+						return true;
+					}
+
+					// function
+					if (typeof config.enabled === "function") {
+						return config.enabled(elem, evt, isClickable(elem));
+					}
+
+					console.error("Invalid value for 'enabled' property. Expected true|false|auto|function but found " + config.enabled);
+					return true;
+				}
+
+				var isClickable = function (elem) {
 					// Checks if the element is hidden by a CSS rule
 					if (isVisible(elem) == false) {
 						return false;
@@ -316,8 +371,8 @@
 
 					return checkElementOnPoint(elem, elementPoint);
 				}
-				
-				var isVisible = function(elem) {
+
+				var isVisible = function (elem) {
 					var style = getComputedStyle(elem);
 
 					if (style.display === 'none') {
@@ -339,7 +394,7 @@
 					return true;
 				}
 
-				var isDisabled = function(elem) {
+				var isDisabled = function (elem) {
 					if (elem.disabled) {
 						return true;
 					}
@@ -349,7 +404,7 @@
 					return false;
 				}
 
-				var getElementViewportPosition = function(elem) {
+				var getElementViewportPosition = function (elem) {
 					var centralPoint = {
 						x: elem.getBoundingClientRect().left + elem.offsetWidth / 2,
 						y: elem.getBoundingClientRect().top + elem.offsetHeight / 2
@@ -374,7 +429,7 @@
 					return centralPoint;
 				}
 
-				var checkElementOnPoint = function(elem, point) {
+				var checkElementOnPoint = function (elem, point) {
 					var pointElement = document.elementFromPoint(point.x, point.y);
 
 					do {
@@ -386,7 +441,7 @@
 					return false;
 				}
 
-				var isOverrided = function(elem) {
+				var isOverrided = function (elem) {
 					var tagsToCheck = ["div"];
 
 					var domElements = [];
@@ -408,7 +463,7 @@
 					return false;
 				}
 
-				var elementOverridesElement = function(innerElement, outerElement) {
+				var elementOverridesElement = function (innerElement, outerElement) {
 
 					if (elementIsInsideElement(innerElement, outerElement) == false && elementIsABackdrop(outerElement) == false) {
 						return false;
@@ -421,7 +476,7 @@
 					return true;
 				}
 
-				var elementIsInsideElement = function(innerElement, outerElement) {
+				var elementIsInsideElement = function (innerElement, outerElement) {
 					var innerCoordinates = innerElement.getBoundingClientRect();
 					var outerCoordinates = outerElement.getBoundingClientRect();
 
@@ -448,7 +503,7 @@
 					return true;
 				}
 
-				var elementIsABackdrop = function(elem) {
+				var elementIsABackdrop = function (elem) {
 
 					if (cssProperty(elem, "position") != "fixed") {
 						return false;
@@ -480,7 +535,7 @@
 					return true;
 				}
 
-				var getElementOnTop = function(a, b) {
+				var getElementOnTop = function (a, b) {
 					var pa = $(a).parents(), ia = pa.length;
 					var pb = $(b).parents(), ib = pb.length;
 
@@ -500,7 +555,7 @@
 						ctxA = ia < 0 ? null : --ia < 0 ? a : pa[ia];
 						za = zIndex(ctxA);
 					}
-					
+
 					while (ctxB && zb === undefined) {
 						ctxB = ib < 0 ? null : --ib < 0 ? b : pb[ib];
 						zb = zIndex(ctxB);
@@ -532,7 +587,7 @@
 					}
 				}
 
-				var domRelativePosition = function(ctxA, ctxB, a, b) {
+				var domRelativePosition = function (ctxA, ctxB, a, b) {
 					if ($.inArray(b, $(a).parents()) >= 0) {
 						return a;
 					}
@@ -544,11 +599,11 @@
 					return ($(ctxA).index() - $(ctxB).index() > 0 ? a : b);
 				}
 
-				var cssProperty = function(elem, prop) {
+				var cssProperty = function (elem, prop) {
 					return window.getComputedStyle(elem).getPropertyValue(prop);
 				}
 
-				var preventDefault = function(evt) {
+				var preventDefault = function (evt) {
 					if (config.preventDefault === false) {
 						return;
 					}
@@ -562,7 +617,7 @@
 					console.warn('Invalid preventDefault value (should be a boolean)');
 				}
 
-				var stopPropagation = function(evt) {
+				var stopPropagation = function (evt) {
 					if (config.stopPropagation === false) {
 						return;
 					}
