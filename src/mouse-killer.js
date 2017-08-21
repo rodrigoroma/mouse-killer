@@ -19,6 +19,7 @@
 		this.preventDefault = true;
 		this.stopPropagation = true;
 		this.enabled = "auto";
+		this.timer = 0;
 
 		this.setEvent = function (event) {
 			this.event = event.toLowerCase();
@@ -49,7 +50,7 @@
 		};
 	})
 
-	mousekiller.directive('mkShortcut', ['$document', 'mouseKiller', function ($document, mouseKiller) {
+	mousekiller.directive('mkShortcut', ['$document', 'mouseKiller', '$timeout', function ($document, mouseKiller, $timeout) {
 		return {
 			restrict: 'A',
 			scope: {
@@ -59,7 +60,8 @@
 				mkHintTitle: '@',
 				mkPreventDefault: '=',
 				mkStopPropagation: '=',
-				mkEnabled: '='
+				mkEnabled: '=',
+				mkTimer: '@'
 			},
 			link: function (scope, element, attrs, controller) {
 				var modifiers = ['shift', 'ctrl', 'alt', 'meta'];
@@ -94,7 +96,8 @@
 						hintTitle: scope.mkHintTitle || mouseKiller.hintTitle,
 						preventDefault: (scope.mkPreventDefault !== undefined) ? scope.mkPreventDefault : mouseKiller.preventDefault,
 						stopPropagation: (scope.mkStopPropagation !== undefined) ? scope.mkStopPropagation : mouseKiller.stopPropagation,
-						enabled: (scope.mkEnabled !== undefined) ? scope.mkEnabled : mouseKiller.enabled
+						enabled: (scope.mkEnabled !== undefined) ? scope.mkEnabled : mouseKiller.enabled,
+						timer: (scope.mkTimer !== undefined) ? scope.mkTimer : mouseKiller.timer
 					}
 				}
 
@@ -189,15 +192,19 @@
 						return;
 					}
 
-					if (isEnabled(elem, evt) == false) {
-						return;
-					}
+					element.focus();
 
-					preventDefault(evt);
+					$timeout(() => {
+						if (isEnabled(elem, evt) == false) {
+							return;
+						}
 
-					stopPropagation(evt);
+						preventDefault(evt);
 
-					element.trigger(config.event);
+						stopPropagation(evt);
+
+						element.trigger(config.event);
+					}, config.timer);
 				}
 
 				var matchKeys = function (evt) {
