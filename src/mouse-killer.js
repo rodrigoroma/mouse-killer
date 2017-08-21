@@ -181,30 +181,30 @@
 				}
 
 				var handleKeydown = function (evt) {
-               var elem = element[0];
+					var elem = element[0];
 
-               if ((elem instanceof Element) == false) {
-                  throw Error('DomUtil: elem is not an element.');
-               }
+					if ((elem instanceof Element) == false) {
+						throw Error('DomUtil: elem is not an element.');
+					}
 
-               // Checks if the pressed keys satisfy the shortcut
-               if (matchKeys(evt) == false) {
-                  return;
-               }
+					// Checks if the pressed keys satisfy the shortcut
+					if (matchKeys(evt) == false) {
+						return;
+					}
 
-               element.focus();
+					element.focus();
 
-               $timeout(() => {
-                  if (isEnabled(elem, evt) == false) {
-                     return;
-                  }
+					$timeout(() => {
+						if (isEnabled(elem, evt) == false) {
+							return;
+						}
 
-                  preventDefault(evt);
+						preventDefault(evt);
 
-                  stopPropagation(evt);
+						stopPropagation(evt);
 
-                  element.trigger(config.event);
-               }, config.timer);
+						element.trigger(config.event);
+					}, config.timer);
 				}
 
 				var matchKeys = function (evt) {
